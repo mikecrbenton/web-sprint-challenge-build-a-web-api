@@ -1,29 +1,31 @@
-const express = require('express')  // MAIN IMPORT ( LIKE REACT )
-const router = express.Router()     // CREATE NEW BRANCH / ROUTER
+const express = require('express') 
+const router = express.Router()     
 const actionsModel = require("./actions-model")
 const projectsModel = require("../projects/projects-model")
+const { checkActionID, checkActionData } = require("../middleware/validate")
 
+router.get("/api/actions", async (req, res) => {
 
-router.get("/actions", async (req, res) => {
    const actions = await actionsModel.get()
-   res.json(actions)
+
+   if( actions.length > 0 ){
+      res.json(actions)
+   }else if( actions.length === 0){
+      res.json({})
+   }else {
+      res.status(404).json( {message: "Action not found"} ) 
+   }
 })
 
-router.get("/actions/:id", async (req, res) => {
-
-   const id = req.params.id
-   const action = await actionsModel.get(id) 
-
-   if(action){
-      res.json(action) }
-   else {
-      res.status(404).json( {message: "User not found"} ) }
+router.get("/api/actions/:id", checkActionID(), (req, res) => {
+      // ID CHECK IN VALIDATE MIDDLEWARE
+      res.status(200).json(req.action) 
 })
 
-router.post("/actions", async (req,res) => {
+router.post("/api/actions", checkActionData(), async (req,res) => {
 
    const projectId = await projectsModel.get(req.body.project_id)
-   console.log("PROJECT ID: ",projectId)
+
    if(projectId){
       const newAction = await actionsModel.insert( {
          project_id: req.body.project_id,
@@ -36,7 +38,7 @@ router.post("/actions", async (req,res) => {
    }
 })
 
-router.put("/actions/:id", async (req,res) => {
+router.put("/api/actions/:id", async (req,res) => {
    const updatedAction = await actionsModel.update( req.params.id, {
       project_id: req.body.project_id,
       description: req.body.description,
@@ -45,7 +47,7 @@ router.put("/actions/:id", async (req,res) => {
    res.status(201).json(updatedAction)
 })
 
-router.delete("/actions/:id", async (req,res) => {
+router.delete("/api/actions/:id", async (req,res) => {
 
    const user = await actionsModel.get(req.params.id)
 

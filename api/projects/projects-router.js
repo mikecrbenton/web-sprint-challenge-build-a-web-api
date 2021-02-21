@@ -3,12 +3,12 @@ const router = express.Router()
 const projectsModel = require("./projects-model")
 
 
-router.get("/projects", async (req, res) => {
+router.get("/api/projects", async (req, res) => {
    const projects = await projectsModel.get()
    res.json(projects)
 })
 
-router.get("/projects/:id", async (req, res) => {
+router.get("/api/projects/:id", async (req, res) => {
 
    const project = await projectsModel.get(req.params.id) 
 
@@ -18,7 +18,7 @@ router.get("/projects/:id", async (req, res) => {
       res.status(404).json( {message: "User not found"} ) }
 })
 
-router.get("/projects/:id/actions", async (req, res) => {
+router.get("/api/projects/:id/actions", async (req, res) => {
 
    const projectActions = await projectsModel.getProjectActions(req.params.id) 
 
@@ -28,7 +28,7 @@ router.get("/projects/:id/actions", async (req, res) => {
       res.status(404).json( {message: "Actions not found"} ) }
 })
 
-router.post("/projects", async (req,res) => {
+router.post("/api/projects", async (req,res) => {
    const newProject = await projectsModel.insert( {
       name: req.body.name,
       description: req.body.description
@@ -36,7 +36,7 @@ router.post("/projects", async (req,res) => {
    res.status(201).json(newProject)
 })
 
-router.put("/projects/:id", async (req,res) => {
+router.put("/api/projects/:id", async (req,res) => {
    const updatedProject = await projectsModel.update( req.params.id, {
       name: req.body.name,
       description: req.body.description
@@ -44,7 +44,7 @@ router.put("/projects/:id", async (req,res) => {
    res.status(201).json(updatedProject)
 })
 
-router.delete("/projects/:id", async (req,res) => {
+router.delete("/api/projects/:id", async (req,res) => {
 
    const user = await projectsModel.get(req.params.id)
 
