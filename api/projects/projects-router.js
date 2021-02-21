@@ -18,6 +18,16 @@ router.get("/projects/:id", async (req, res) => {
       res.status(404).json( {message: "User not found"} ) }
 })
 
+router.get("/projects/:id/actions", async (req, res) => {
+
+   const projectActions = await projectsModel.getProjectActions(req.params.id) 
+
+   if(projectActions){
+      res.json(projectActions) }
+   else {
+      res.status(404).json( {message: "Actions not found"} ) }
+})
+
 router.post("/projects", async (req,res) => {
    const newProject = await projectsModel.insert( {
       name: req.body.name,

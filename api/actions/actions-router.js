@@ -1,6 +1,7 @@
 const express = require('express')  // MAIN IMPORT ( LIKE REACT )
 const router = express.Router()     // CREATE NEW BRANCH / ROUTER
 const actionsModel = require("./actions-model")
+const projectsModel = require("../projects/projects-model")
 
 
 router.get("/actions", async (req, res) => {
@@ -17,16 +18,22 @@ router.get("/actions/:id", async (req, res) => {
       res.json(action) }
    else {
       res.status(404).json( {message: "User not found"} ) }
-
 })
 
 router.post("/actions", async (req,res) => {
-   const newAction = await actionsModel.insert( {
-      project_id: req.body.project_id,
-      description: req.body.description,
-      notes: req.body.notes
-   })
-   res.status(201).json(newAction)
+
+   const projectId = await projectsModel.get(req.body.project_id)
+   console.log("PROJECT ID: ",projectId)
+   if(projectId){
+      const newAction = await actionsModel.insert( {
+         project_id: req.body.project_id,
+         description: req.body.description,
+         notes: req.body.notes
+      })
+      res.status(201).json(newAction)
+   }else{
+      res.status(404).json( {message: "There is no project with that ID"} ) 
+   }
 })
 
 router.put("/actions/:id", async (req,res) => {
